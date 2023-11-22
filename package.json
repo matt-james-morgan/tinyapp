@@ -16,5 +16,8 @@
   "bugs": {
     "url": "https://github.com/matt-james-morgan/tinyapp/issues"
   },
-  "homepage": "https://github.com/matt-james-morgan/tinyapp#readme"
+  "homepage": "https://github.com/matt-james-morgan/tinyapp#readme",
+  "dependencies": {
+    "express": "^4.18.2"
+  }
 }
