@@ -22,7 +22,7 @@ app.get("/urls.json", (req, res)=>{
 
 //this tell browser to render urls_index and we pass template vars to the file
 app.get("/urls", (req, res)=>{
-  const templateVars = urlDatabase;
+  const templateVars = {urls: urlDatabase};
   res.render("urls_index", templateVars);
 })
 
