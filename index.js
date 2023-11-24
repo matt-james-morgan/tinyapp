@@ -8,8 +8,10 @@ const urlDatabase = {
   "9sm5xK": "http://www.google.com"
 }
 
+//uses ejs middlware
 app.set("view engine", "ejs");
 
+//Prints hello when visiting homepage
 app.get("/", (req,res)=>{
   res.send("Hello");
 })
@@ -17,6 +19,12 @@ app.get("/", (req,res)=>{
 app.get("/urls.json", (req, res)=>{
   res.json(urlDatabase);
 });
+
+//this tell browser to render urls_index and we pass template vars to the file
+app.get("/urls", (req, res)=>{
+  const templateVars = urlDatabase;
+  res.render("urls_index", templateVars);
+})
 
 app.get("/hello", (req, res) => {
   res.send("<html><body>Hello <b>World</b></body></html>\n");
