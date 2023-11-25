@@ -58,6 +58,12 @@ app.post("/urls/:id/delete",(req,res)=>{
 
 })
 
+app.post("/urls/:id/edit", (req, res)=>{
+  console.log(req.body);
+  urlDatabase[req.params.id] = req.body.longUrl;
+  res.redirect('/urls')
+})
+
 app.listen(PORT, ()=>{
   console.log(`Express server listening on port ${PORT}`)
 })
