@@ -8,6 +8,7 @@ const urlDatabase = {
   "b2xVn2": "http://www.lighthouselabs.ca",
   "9sm5xK": "http://www.google.com"
 }
+
 function generateRandomString(num) {
   return crypto.randomBytes(num).toString('hex');
   
@@ -18,14 +19,8 @@ app.set("view engine", "ejs");
 
 app.use(express.urlencoded({ extended: true }));
 
-//Prints hello when visiting homepage
-app.get("/", (req,res)=>{
-  res.send("Hello");
-})
 
-app.get("/urls.json", (req, res)=>{
-  res.json(urlDatabase);
-});
+
 
 //this tell browser to render urls_index and we pass template vars to the file
 app.get("/urls", (req, res)=>{
@@ -54,6 +49,14 @@ app.post("/urls", (req, res) => {
   console.log(req.body); // Log the POST request body to the console
   res.redirect(`urls/${shortUrl}`); // Respond with 'Ok' (we will replace this)
 });
+
+app.post("/urls/:id/delete",(req,res)=>{
+  
+  delete urlDatabase[req.params.id];
+
+  res.redirect('/urls')
+
+})
 
 app.listen(PORT, ()=>{
   console.log(`Express server listening on port ${PORT}`)
