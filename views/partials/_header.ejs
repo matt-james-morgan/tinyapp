@@ -31,11 +31,13 @@
       </div>
       <% if(username){ %>
         <h2><%= username %></h2>
+        <form method="POST" action="/logout">
+          <button type="submit">Logout</button>
+        </form>
       <% }else{ %>
       <form method="POST" action="/login">
         <input type="text" name="username" placeholder="Username">
-        <button type="su
-        ">Login</button>
+        <button type="submit">Login</button>
       </form>
       <% } %>
     </nav>

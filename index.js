@@ -75,6 +75,11 @@ app.post("/login", (req,res)=>{
   res.cookie("username", req.body.username);
   res.redirect("/urls");
 })
+
+app.post("/logout", (req,res) =>{
+  res.clearCookie("username");
+  res.redirect("/urls");
+})
 app.listen(PORT, ()=>{
   console.log(`Express server listening on port ${PORT}`)
 })
