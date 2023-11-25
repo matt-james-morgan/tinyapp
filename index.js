@@ -1,6 +1,10 @@
 const express = require('express');
-const crypto = require("crypto")
+const crypto = require("crypto");
+const cookieParser = require("cookie-parser")
 const app = express();
+
+app.use(cookieParser());
+
 const PORT = 3000;
 
 
@@ -24,7 +28,10 @@ app.use(express.urlencoded({ extended: true }));
 
 //this tell browser to render urls_index and we pass template vars to the file
 app.get("/urls", (req, res)=>{
-  const templateVars = {urls: urlDatabase};
+  const templateVars = {
+    urls: urlDatabase,
+    username: req.cookies["username"]
+  };
   res.render("urls_index", templateVars);
 });
 

@@ -29,11 +29,15 @@
         </div>
         
       </div>
+      <% if(username){ %>
+        <h2><%= username %></h2>
+      <% }else{ %>
       <form method="POST" action="/login">
         <input type="text" name="username" placeholder="Username">
         <button type="su
         ">Login</button>
       </form>
+      <% } %>
     </nav>
   </header>
 </body>
