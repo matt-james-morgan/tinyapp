@@ -64,6 +64,10 @@ app.post("/urls/:id/edit", (req, res)=>{
   res.redirect('/urls')
 })
 
+app.post("/urls/:username", (req,res)=>{
+  res.cookie("username", req.params.username);
+  res.redirect("/urls");
+})
 app.listen(PORT, ()=>{
   console.log(`Express server listening on port ${PORT}`)
 })
