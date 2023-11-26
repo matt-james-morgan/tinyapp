@@ -28,8 +28,11 @@ const users = {
 
 function generateRandomString(num) {
   return crypto.randomBytes(num).toString('hex');
-  
 }
+
+function getUserByEmail (email){
+  return Object.values(users).some(user => user.email === email);
+};
 
 //uses ejs middlware
 app.set("view engine", "ejs");
@@ -65,6 +68,17 @@ app.get("/urls/register", (req,res)=>{
   }
   
   res.render("url_registration", templateVars);
+});
+
+app.get("/login", (req,res)=>{
+
+  const ID = req.cookies["user_id"];
+
+  const templateVars = {
+    user: users[ID] ? users[ID] : false
+  }
+  
+  res.render("url_login", templateVars);
 })
 
 
@@ -120,6 +134,16 @@ app.post("/logout", (req,res) =>{
 });
 
 app.post("/register", (req, res)=>{
+
+  
+  if(req.body.email === "" || req.body.password === ""){
+    res.statusCode(400);
+  }
+
+  if(getUserByEmail(req.body.email)){
+    res.statusCode(400);
+  }
+
   const ID = generateRandomString(3);
   users[ID] = {};
   users[ID]["email"] = req.body.email;
