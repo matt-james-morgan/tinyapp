@@ -34,6 +34,28 @@ function getUserByEmail (email){
   return Object.values(users).some(user => user.email === email);
 };
 
+function returnUserIDbyEmail (email){
+  return Object.keys(users).find(ID => {
+    if(users[ID].email === email){
+    return ID;
+    }
+  })
+}
+
+function checkIfEmailAndPasswordAreStrings (email, password){
+  if(email === "" || password === ""){
+    return false
+  }
+  return true;
+}
+
+function comparePasswords(inputPassword, userPassword){
+  if(inputPassword === userPassword){
+    return true;
+  }
+  return false;
+}
+
 //uses ejs middlware
 app.set("view engine", "ejs");
 
@@ -60,7 +82,7 @@ app.get("/urls/new", (req, res)=>{
   res.render('urls_new', templateVars);
 });
 
-app.get("/urls/register", (req,res)=>{
+app.get("/register", (req,res)=>{
   const ID = req.cookies["user_id"];
 
   const templateVars = {
@@ -121,9 +143,27 @@ app.post("/urls/:id/edit", (req, res)=>{
   res.redirect('/urls');
 });
 
-app.post("/login", (req,res)=>{
-  res.cookie("username", req.body.username);
-  res.redirect("/urls");
+app.post("/login", (req, res)=>{
+
+  if(!checkIfEmailAndPasswordAreStrings(req.body.email, req.body.password)){
+     res.status("403");
+      res.redirect("/login");
+  }
+
+  if(!getUserByEmail(req.body.email)){
+    res.status(403);
+  }else{
+    const ID = returnUserIDbyEmail(req.body.email);
+    console.log(typeof ID);
+    if(!comparePasswords(req.body.password, users[ID].password)){
+      res.status(403);
+    }else{
+      res.cookie("user_id", ID);
+      res.redirect("/urls");
+    }
+  }
+
+  
 });
 
 app.post("/logout", (req,res) =>{
@@ -136,12 +176,13 @@ app.post("/logout", (req,res) =>{
 app.post("/register", (req, res)=>{
 
   
-  if(req.body.email === "" || req.body.password === ""){
-    res.statusCode(400);
+  
+  if(!checkIfEmailAndPasswordAreStrings(req.body.email, req.body.password)){
+    res.status(400);
   }
 
   if(getUserByEmail(req.body.email)){
-    res.statusCode(400);
+    res.status(400);
   }
 
   const ID = generateRandomString(3);
