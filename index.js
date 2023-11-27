@@ -3,16 +3,18 @@ const crypto = require("crypto");
 const cookieParser = require("cookie-parser");
 const app = express();
 
+
 app.use(cookieParser());
 
 const PORT = 3000;
 
-
+//Mock database of urls
 const urlDatabase = {
   "b2xVn2": "http://www.lighthouselabs.ca",
   "9sm5xK": "http://www.google.com"
 };
 
+//Mock data of actual users
 const users = {
   123456 : {
     id: "userRandomID",
@@ -26,14 +28,17 @@ const users = {
   },
 };
 
+//generates random hexidecimal code, you have to enter half of the digits you want
 function generateRandomString(num) {
   return crypto.randomBytes(num).toString('hex');
 }
 
+//this returns true if email is already a registered user
 function getUserByEmail (email){
   return Object.values(users).some(user => user.email === email);
 };
 
+//returns ID of submitted email
 function returnUserIDbyEmail (email){
   return Object.keys(users).find(ID => {
     if(users[ID].email === email){
@@ -42,6 +47,7 @@ function returnUserIDbyEmail (email){
   })
 }
 
+//this functions makes sure that the user hasn't left blank inputs
 function checkIfEmailAndPasswordAreStrings (email, password){
   if(email === "" || password === ""){
     return false
@@ -49,6 +55,7 @@ function checkIfEmailAndPasswordAreStrings (email, password){
   return true;
 }
 
+//takes in two passwords and returns true if they match
 function comparePasswords(inputPassword, userPassword){
   if(inputPassword === userPassword){
     return true;
@@ -74,6 +81,8 @@ app.get("/urls", (req, res)=>{
   res.render("urls_index", templateVars);
 });
 
+//loads page for a new URL
+
 app.get("/urls/new", (req, res)=>{
   const ID = req.cookies["user_id"];
   const templateVars = {
@@ -82,6 +91,7 @@ app.get("/urls/new", (req, res)=>{
   res.render('urls_new', templateVars);
 });
 
+//loads register pages
 app.get("/register", (req,res)=>{
   const ID = req.cookies["user_id"];
 
@@ -91,6 +101,7 @@ app.get("/register", (req,res)=>{
   
   res.render("url_registration", templateVars);
 });
+
 
 app.get("/login", (req,res)=>{
 
@@ -103,7 +114,7 @@ app.get("/login", (req,res)=>{
   res.render("url_login", templateVars);
 })
 
-
+//gets specific page for url based on id of link
 app.get("/urls/:id", (req, res)=>{
   const ID = req.cookies["user_id"];
   const templateVars = {
@@ -129,6 +140,7 @@ app.post("/urls", (req, res) => {
   res.redirect(`urls/${shortUrl}`); // Respond with 'Ok' (we will replace this)
 });
 
+//handles delete action and removes link from database
 app.post("/urls/:id/delete",(req,res)=>{
   
   delete urlDatabase[req.params.id];
@@ -137,6 +149,7 @@ app.post("/urls/:id/delete",(req,res)=>{
 
 });
 
+//redefines long url, allows user to edit long url
 app.post("/urls/:id/edit", (req, res)=>{
   
   urlDatabase[req.params.id] = req.body.longUrl;
@@ -144,17 +157,18 @@ app.post("/urls/:id/edit", (req, res)=>{
 });
 
 app.post("/login", (req, res)=>{
-
+// checks if input isn't blank
   if(!checkIfEmailAndPasswordAreStrings(req.body.email, req.body.password)){
     res.status(403).send('Forbidden: Required username and password');
 
   }
-
+  //if user email doesn't exist make them register
   if(!getUserByEmail(req.body.email)){
     res.status(403).send("Register for an account");
   }else{
+
     const ID = returnUserIDbyEmail(req.body.email);
-   
+   //compares passwords
     if(!comparePasswords(req.body.password, users[ID].password)){
       res.status(403).send("Incorrect password");
     }else{
@@ -180,7 +194,7 @@ app.post("/register", (req, res)=>{
   if(!checkIfEmailAndPasswordAreStrings(req.body.email, req.body.password)){
     res.status(400);
   }
-
+  //checks if email exists already
   if(getUserByEmail(req.body.email)){
     res.status(400);
   }
