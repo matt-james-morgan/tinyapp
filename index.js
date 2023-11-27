@@ -146,17 +146,17 @@ app.post("/urls/:id/edit", (req, res)=>{
 app.post("/login", (req, res)=>{
 
   if(!checkIfEmailAndPasswordAreStrings(req.body.email, req.body.password)){
-     res.status("403");
-      res.redirect("/login");
+    res.status(403).send('Forbidden: Required username and password');
+
   }
 
   if(!getUserByEmail(req.body.email)){
-    res.status(403);
+    res.status(403).send("Register for an account");
   }else{
     const ID = returnUserIDbyEmail(req.body.email);
-    console.log(typeof ID);
+   
     if(!comparePasswords(req.body.password, users[ID].password)){
-      res.status(403);
+      res.status(403).send("Incorrect password");
     }else{
       res.cookie("user_id", ID);
       res.redirect("/urls");
@@ -170,7 +170,7 @@ app.post("/logout", (req,res) =>{
 
   //this clears the browsers cookie data
   res.clearCookie("user_id");
-  res.redirect("/urls");
+  res.redirect("/login");
 });
 
 app.post("/register", (req, res)=>{
