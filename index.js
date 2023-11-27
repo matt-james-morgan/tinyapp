@@ -93,13 +93,19 @@ app.get("/urls/new", (req, res)=>{
 
 //loads register pages
 app.get("/register", (req,res)=>{
+
   const ID = req.cookies["user_id"];
 
+  console.log(ID);
   const templateVars = {
     user: users[ID] ? users[ID] : false
   }
+  if(!ID){
+    res.render("url_registration", templateVars);
+  }else{
+    res.redirect("/urls")
+  }
   
-  res.render("url_registration", templateVars);
 });
 
 
@@ -110,8 +116,14 @@ app.get("/login", (req,res)=>{
   const templateVars = {
     user: users[ID] ? users[ID] : false
   }
+
+  if(!ID){
+    res.render("url_login", templateVars);
+  }else{
+    res.redirect("/urls");
+  }
   
-  res.render("url_login", templateVars);
+  
 })
 
 //gets specific page for url based on id of link
