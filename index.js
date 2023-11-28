@@ -216,9 +216,17 @@ app.post("/urls", (req, res) => {
 
 //handles delete action and removes link from database
 app.post("/urls/:id/delete",(req,res)=>{
-  
-  const ID = req.cookies["user_id"];
+  //checks if the key exists
+  if(!Object.keys(urlDatabase).find(key => key === req.params.id)){
+    res.send("<h1>Not a valid key</h1>");
+  }
 
+  const ID = req.cookies["user_id"];
+  //checks if user is logged
+  if(ID === undefined){
+    res.send("<h1>Pleas log in</h1>");
+  }
+  //checks if user owns that ID
   if(ID !== urlDatabase[req.params.id].userID){
     res.send("<h1>You do not have permission to delete this file</h1>");
   }
@@ -231,15 +239,22 @@ app.post("/urls/:id/delete",(req,res)=>{
 
 //redefines long url, allows user to edit long url
 app.post("/urls/:id/edit", (req, res)=>{
-
+  //checks if key exists
+  if(!Object.keys(urlDatabase).find(key => key === req.params.id)){
+    res.send("<h1>Not a valid key</h1>");
+  }
   const ID = req.cookies["user_id"];
-
+  //checks if user is logged in
+  if(ID === undefined){
+    res.send("<h1>Pleas log in</h1>");
+  }
+  //check is user owns that ID
   if(ID !== urlDatabase[req.params.id].userID){
-    res.send("<h1>You do not have permission to delete this file</h1>");
+    res.send("<h1>You do not have permission to edit this file</h1>");
   }
 
   urlDatabase[req.params.id].longUrl = req.body.longUrl;
-  
+
   res.redirect('/urls');
 });
 
