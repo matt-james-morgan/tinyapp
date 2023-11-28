@@ -10,8 +10,18 @@ const PORT = 3000;
 
 //Mock database of urls
 const urlDatabase = {
-  "b2xVn2": "http://www.lighthouselabs.ca",
-  "9sm5xK": "http://www.google.com"
+  b6UTxQ: {
+    longUrl: "https://www.tsn.ca",
+    userID: "123456",
+  },
+  i3BoGr: {
+    longUrl: "https://www.google.ca",
+    userID: "123456",
+  },
+  i2CiG3: {
+    longUrl: "https://www.facebook.com",
+    userID: "346758",
+  },
 };
 
 //Mock data of actual users
@@ -63,6 +73,18 @@ function comparePasswords(inputPassword, userPassword){
   return false;
 }
 
+function urlsForUser(ID){
+  const userUrls = {}
+
+  for(let id in urlDatabase){
+    if(urlDatabase[id].userID === ID){
+      userUrls[id] = urlDatabase[id];
+    }
+  }
+
+  return userUrls;
+}
+
 //uses ejs middlware
 app.set("view engine", "ejs");
 
@@ -72,9 +94,17 @@ app.use(express.urlencoded({ extended: true }));
 //this tell browser to render urls_index and we pass template vars to the file
 app.get("/urls", (req, res)=>{
   const ID = req.cookies["user_id"];
-  //cookie-parses needs ot be installed to read req.cookies
+  
+  if(ID === undefined){
+    res.send("<h1>Must be logged in</h1>")
+     //res.redirect('/login');
+  }
+  
+  const userUrls = urlsForUser(ID);
+
+  //cookie-parses needs it be installed to read req.cookies
   const templateVars = {
-    urls: urlDatabase,
+    urls: userUrls,
     user: users[ID] ? users[ID] : false
   };
   
@@ -134,10 +164,19 @@ app.get("/login", (req,res)=>{
 
 //gets specific page for url based on id of link
 app.get("/urls/:id", (req, res)=>{
+
   const ID = req.cookies["user_id"];
+
+  //This if statment checks if user is logged in
+  if(ID === undefined){
+    res.send("<h1>Please sign in</h1>");
+    //This else if checks if user has access to requested link
+  }else if(urlDatabase[req.params.id].userID !== ID){
+    res.send("<h1>You do not have permission</h1>");
+  }
   const templateVars = {
     id: req.params.id, 
-    longUrl: urlDatabase[req.params.id],
+    longUrl: urlDatabase[req.params.id].longUrl,
     user: users[ID] ? users[ID] : false
   };
 
@@ -148,7 +187,7 @@ app.get("/u/:id", (req, res) => {
 
   for(let id in urlDatabase){
     if(id === req.params.id){
-      const longUrl = urlDatabase[req.params.id];
+      const longUrl = urlDatabase[req.params.id].longUrl;
 
       res.redirect(`${longUrl}`);
     }
@@ -178,6 +217,12 @@ app.post("/urls", (req, res) => {
 //handles delete action and removes link from database
 app.post("/urls/:id/delete",(req,res)=>{
   
+  const ID = req.cookies["user_id"];
+
+  if(ID !== urlDatabase[req.params.id].userID){
+    res.send("<h1>You do not have permission to delete this file</h1>");
+  }
+
   delete urlDatabase[req.params.id];
 
   res.redirect('/urls');
@@ -186,8 +231,15 @@ app.post("/urls/:id/delete",(req,res)=>{
 
 //redefines long url, allows user to edit long url
 app.post("/urls/:id/edit", (req, res)=>{
+
+  const ID = req.cookies["user_id"];
+
+  if(ID !== urlDatabase[req.params.id].userID){
+    res.send("<h1>You do not have permission to delete this file</h1>");
+  }
+
+  urlDatabase[req.params.id].longUrl = req.body.longUrl;
   
-  urlDatabase[req.params.id] = req.body.longUrl;
   res.redirect('/urls');
 });
 
@@ -223,8 +275,6 @@ app.post("/logout", (req,res) =>{
 });
 
 app.post("/register", (req, res)=>{
-
-  
   
   if(!checkIfEmailAndPasswordAreStrings(req.body.email, req.body.password)){
     res.status(400);
