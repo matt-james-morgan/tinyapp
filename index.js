@@ -1,6 +1,7 @@
 const express = require('express');
 const crypto = require("crypto");
 const cookieParser = require("cookie-parser");
+const bcrypt = require("bcryptjs");
 const app = express();
 
 
@@ -29,7 +30,7 @@ const users = {
   123456 : {
     id: "userRandomID",
     email: "user@example.com",
-    password: "purple-monkey-dinosaur",
+    password: "123",
   },
   234567: {
     id: "user2RandomID",
@@ -67,10 +68,7 @@ function checkIfEmailAndPasswordAreStrings (email, password){
 
 //takes in two passwords and returns true if they match
 function comparePasswords(inputPassword, userPassword){
-  if(inputPassword === userPassword){
-    return true;
-  }
-  return false;
+  return bcrypt.compareSync(inputPassword, userPassword);
 }
 
 function urlsForUser(ID){
@@ -153,10 +151,12 @@ app.get("/login", (req,res)=>{
     user: users[ID] ? users[ID] : false
   }
 
+  
+
   if(!ID){
-    res.render("url_login", templateVars);
+     return res.render("url_login", templateVars);
   }else{
-    res.redirect("/urls");
+    return res.redirect("/urls");
   }
   
   
@@ -169,11 +169,14 @@ app.get("/urls/:id", (req, res)=>{
 
   //This if statment checks if user is logged in
   if(ID === undefined){
-    res.send("<h1>Please sign in</h1>");
+    return res.send("<h1>Please sign in</h1>");
     //This else if checks if user has access to requested link
   }else if(urlDatabase[req.params.id].userID !== ID){
-    res.send("<h1>You do not have permission</h1>");
+    console.log("ID", ID);
+    console.log(urlDatabase[req.params.id].userID);
+    return res.send("<h1>You do not have permission</h1>");
   }
+
   const templateVars = {
     id: req.params.id, 
     longUrl: urlDatabase[req.params.id].longUrl,
@@ -207,8 +210,10 @@ app.post("/urls", (req, res) => {
   }else{
     const shortUrl = generateRandomString(3);
   
-    urlDatabase[shortUrl] = req.body.longUrl;
-  
+    urlDatabase[shortUrl] = {};
+    urlDatabase[shortUrl].longUrl = req.body.longUrl;
+    urlDatabase[shortUrl].userID = req.cookies["user_id"];
+
     res.redirect(`urls/${shortUrl}`); 
   }
  
@@ -267,6 +272,7 @@ app.post("/login", (req, res)=>{
   //if user email doesn't exist make them register
   if(!getUserByEmail(req.body.email)){
     res.status(403).send("Register for an account");
+
   }else{
 
     const ID = returnUserIDbyEmail(req.body.email);
@@ -302,7 +308,9 @@ app.post("/register", (req, res)=>{
   const ID = generateRandomString(3);
   users[ID] = {};
   users[ID]["email"] = req.body.email;
-  users[ID]["password"] = req.body.password;
+
+  const encrytpedPassword = bcrypt.hashSync(req.body.password, 10);
+  users[ID]["password"] = encrytpedPassword;
   users[ID]["id"] = ID;
 
 
