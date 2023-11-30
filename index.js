@@ -17,7 +17,7 @@ app.use(methodOverride('_method'))
 
 
 app.use(cookieSession({
-  name: 'user_id',
+  name: 'session',
   keys: ["mysecretkey"],
 
   // Cookie Options
@@ -265,7 +265,7 @@ app.post("/login", (req, res)=>{
     if(!comparePasswords(req.body.password, users[ID].password)){
       res.status(403).send("Incorrect password");
     }else{
-      console.log(ID);
+      
       req.session.user_id = ID;
 
       res.redirect("/urls");
@@ -278,8 +278,7 @@ app.post("/login", (req, res)=>{
 app.post("/logout", (req,res) =>{
 
   //this clears the browsers cookie data
-  res.clearCookie("user_id");
-  res.clearCookie("user_id.sig");
+  req.session = null;
   
   res.redirect("/login");
 });
