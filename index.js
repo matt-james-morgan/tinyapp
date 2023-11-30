@@ -204,7 +204,7 @@ app.post("/urls", (req, res) => {
 });
 
 //handles delete action and removes link from database
-app.post("/urls/:id/delete",(req,res)=>{
+app.delete("/urls/:id",(req,res)=>{
   //checks if the key exists
   if(!Object.keys(urlDatabase).find(key => key === req.params.id)){
     res.send("<h1>Not a valid key</h1>");
@@ -227,7 +227,7 @@ app.post("/urls/:id/delete",(req,res)=>{
 });
 
 //redefines long url, allows user to edit long url
-app.post("/urls/:id/edit", (req, res)=>{
+app.put("/urls/:id", (req, res)=>{
   //checks if key exists
   if(!Object.keys(urlDatabase).find(key => key === req.params.id)){
     res.send("<h1>Not a valid key</h1>");
