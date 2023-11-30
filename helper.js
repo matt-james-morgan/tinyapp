@@ -1,5 +1,5 @@
 const bcrypt = require("bcryptjs")
-
+const crypto = require("crypto");
 //this returns true if email is already a registered user
 function getUserByEmail (email, users){
   
