@@ -1,6 +1,5 @@
 const express = require('express');
-const crypto = require("crypto");
-const methodOverride = require('method-override')
+const methodOverride = require('method-override');
 const { getUserByEmail,
   generateRandomString,
   checkIfEmailAndPasswordAreStrings,
@@ -8,13 +7,13 @@ const { getUserByEmail,
   urlsForUser
  } = require("./helper");
 const bcrypt = require("bcryptjs");
+const cookieSession = require('cookie-session');
+
 const app = express();
 
 
-const cookieSession = require('cookie-session')
-app.use(methodOverride('_method'))
 
-
+app.use(methodOverride('_method'));
 
 app.use(cookieSession({
   name: 'session',
@@ -45,6 +44,8 @@ const urlDatabase = {
   },
 };
 const password1 = bcrypt.hashSync("1234", 10);
+const password2 = bcrypt.hashSync("6789", 10);
+
 //Mock data of actual users
 const users = {
   123456 : {
@@ -55,7 +56,7 @@ const users = {
   234567: {
     id: "user2RandomID",
     email: "user2@example.com",
-    password: "dishwasher-funk",
+    password: password2,
   },
 };
 
