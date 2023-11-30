@@ -3,6 +3,7 @@ const crypto = require("crypto");
 //const cookieParser = require("cookie-parser");
 const bcrypt = require("bcryptjs");
 const app = express();
+const { getUserByEmail } = require("./helper");
 
 var cookieSession = require('cookie-session')
 
@@ -57,10 +58,7 @@ function generateRandomString(num) {
   return crypto.randomBytes(num).toString('hex');
 }
 
-//this returns true if email is already a registered user
-function getUserByEmail (email){
-  return Object.values(users).some(user => user.email === email);
-};
+
 
 //returns ID of submitted email
 function returnUserIDbyEmail (email){
@@ -285,7 +283,7 @@ app.post("/login", (req, res)=>{
 
   }
   //if user email doesn't exist make them register
-  if(!getUserByEmail(req.body.email)){
+  if(!getUserByEmail(req.body.email, users)){
     res.status(403).send("Register for an account");
 
   }else{
@@ -321,7 +319,7 @@ app.post("/register", (req, res)=>{
     res.status(400);
   }
   //checks if email exists already
-  if(getUserByEmail(req.body.email)){
+  if(getUserByEmail(req.body.email, users)){
     res.status(400);
   }
 
