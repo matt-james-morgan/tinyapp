@@ -1,15 +1,16 @@
-const bcrypt = require("bcryptjs")
+const bcrypt = require("bcryptjs");
 const crypto = require("crypto");
+
 //this returns true if email is already a registered user
-function getUserByEmail (email, users){
+function getUserByEmail(email, users) {
   
-   for(let userID in users){
-    if(users[userID].email === email){
+  for (let userID in users) {
+    if (users[userID].email === email) {
       return userID;
     }
-   }
+  }
   return undefined;
-};
+}
 
 //generates random hexidecimal code, you have to enter half of the digits you want
 function generateRandomString(num) {
@@ -18,23 +19,23 @@ function generateRandomString(num) {
 
 
 //this functions makes sure that the user hasn't left blank inputs
-function checkIfEmailAndPasswordAreStrings (email, password){
-  if(email === "" || password === ""){
-    return false
+function checkIfEmailAndPasswordAreStrings(email, password) {
+  if (email === "" || password === "") {
+    return false;
   }
   return true;
 }
 
 //takes in two passwords and returns true if they match
-function comparePasswords(inputPassword, userPassword){
+function comparePasswords(inputPassword, userPassword) {
   return bcrypt.compareSync(inputPassword, userPassword);
 }
 
-function urlsForUser(ID, urlDatabase){
-  const userUrls = {}
+function urlsForUser(ID, urlDatabase) {
+  const userUrls = {};
 
-  for(let id in urlDatabase){
-    if(urlDatabase[id].userID === ID){
+  for (let id in urlDatabase) {
+    if (urlDatabase[id].userID === ID) {
       userUrls[id] = urlDatabase[id];
     }
   }
@@ -47,4 +48,4 @@ module.exports = { getUserByEmail,
   checkIfEmailAndPasswordAreStrings,
   comparePasswords,
   urlsForUser
- }
+};
