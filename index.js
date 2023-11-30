@@ -49,14 +49,16 @@ const password2 = bcrypt.hashSync("6789", 10);
 //Mock data of actual users
 const users = {
   123456 : {
-    id: "userRandomID",
+    id: "123456",
     email: "user@example.com",
     password: password1,
+    username: "userRandomID"
   },
   234567: {
-    id: "user2RandomID",
+    id: "234567",
     email: "user2@example.com",
     password: password2,
+    username: 'user2RandomID'
   },
 };
 
@@ -298,7 +300,7 @@ app.post("/register", (req, res)=>{
   const ID = generateRandomString(3);
   users[ID] = {};
   users[ID]["email"] = req.body.email;
-
+  users[ID]['username'] = req.body.username;
   const encrytpedPassword = bcrypt.hashSync(req.body.password, 10);
   users[ID]["password"] = encrytpedPassword;
   users[ID]["id"] = ID;
