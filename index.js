@@ -169,8 +169,9 @@ app.get("/urls/:id", (req, res)=>{
   res.render("url_show", templateVars);
 });
 
+//redirects tiny linnk to full link
 app.get("/u/:id", (req, res) => {
-
+  
   for(let id in urlDatabase){
     if(id === req.params.id){
       const longUrl = urlDatabase[req.params.id].longUrl;
@@ -187,7 +188,7 @@ app.get("/u/:id", (req, res) => {
 app.post("/urls", (req, res) => {
 
   const ID = req.session.user_id;
-
+ 
   if(!ID){
     res.send("<h1>You Must Log In</h1>");
   }else{
@@ -197,7 +198,7 @@ app.post("/urls", (req, res) => {
     urlDatabase[shortUrl] = {};
     urlDatabase[shortUrl].longUrl = req.body.longUrl;
     urlDatabase[shortUrl].userID = req.session.user_id;
-
+   
     res.redirect(`urls/${shortUrl}`); 
   }
  
