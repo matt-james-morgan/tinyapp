@@ -1,12 +1,18 @@
 const express = require('express');
 const crypto = require("crypto");
-//const cookieParser = require("cookie-parser");
+const methodOverride = require('method-override')
+const { getUserByEmail,
+  generateRandomString,
+  checkIfEmailAndPasswordAreStrings,
+  comparePasswords,
+  urlsForUser
+ } = require("./helper");
 const bcrypt = require("bcryptjs");
 const app = express();
-const { getUserByEmail } = require("./helper");
 
-var cookieSession = require('cookie-session')
 
+const cookieSession = require('cookie-session')
+app.use(methodOverride('_method'))
 
 
 
@@ -53,46 +59,11 @@ const users = {
   },
 };
 
-//generates random hexidecimal code, you have to enter half of the digits you want
-function generateRandomString(num) {
-  return crypto.randomBytes(num).toString('hex');
-}
 
 
 
-//returns ID of submitted email
-function returnUserIDbyEmail (email){
-  return Object.keys(users).find(ID => {
-    if(users[ID].email === email){
-    return ID;
-    }
-  })
-}
 
-//this functions makes sure that the user hasn't left blank inputs
-function checkIfEmailAndPasswordAreStrings (email, password){
-  if(email === "" || password === ""){
-    return false
-  }
-  return true;
-}
 
-//takes in two passwords and returns true if they match
-function comparePasswords(inputPassword, userPassword){
-  return bcrypt.compareSync(inputPassword, userPassword);
-}
-
-function urlsForUser(ID){
-  const userUrls = {}
-
-  for(let id in urlDatabase){
-    if(urlDatabase[id].userID === ID){
-      userUrls[id] = urlDatabase[id];
-    }
-  }
-
-  return userUrls;
-}
 
 //uses ejs middlware
 app.set("view engine", "ejs");
@@ -110,7 +81,7 @@ app.get("/urls", (req, res)=>{
      //res.redirect('/login');
   }
   
-  const userUrls = urlsForUser(ID);
+  const userUrls = urlsForUser(ID, urlDatabase);
 
   //cookie-parses needs it be installed to read req.cookies
   const templateVars = {
@@ -288,7 +259,7 @@ app.post("/login", (req, res)=>{
 
   }else{
 
-    const ID = returnUserIDbyEmail(req.body.email);
+    const ID = getUserByEmail(req.body.email, users);
     
    //compares passwords
     if(!comparePasswords(req.body.password, users[ID].password)){
