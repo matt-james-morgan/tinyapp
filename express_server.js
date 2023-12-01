@@ -12,7 +12,7 @@ const { getUserByEmail,
 } = require("./helper");
 const bcrypt = require("bcryptjs");
 const cookieSession = require('cookie-session');
-const { urlDatabase, users} = require('./datatbase');
+const { urlDatabase, users, PORT} = require('./datatbase');
 
 
 const app = express();
@@ -36,7 +36,7 @@ app.set("view engine", "ejs");
 app.use(express.urlencoded({ extended: true }));
 
 
-const PORT = 3000;
+
 
 
 
@@ -141,7 +141,7 @@ app.get("/urls/:id", (req, res)=>{
     return res.send("<h1>Url ID does not exists");
   }else if (urlDatabase[req.params.id].userID !== ID) {
     
-    console.log(urlDatabase[req.params.id].userID);
+    
     return res.send("<h1>You do not have permission</h1>");
   }
 
@@ -271,13 +271,14 @@ app.post("/logout", (req,res) =>{
 
 app.post("/register", (req, res)=>{
   
+  if (req.body.email === "" || req.body.password === "" || req.body.username == ""){
+    return res.send("<h1>Field cannot be blank</h1>");
+  }
+  
   if (!checkIfEmailAndPasswordAreStrings(req.body.email, req.body.password)) {
     return res.status(400);
   }
-  if (req.body.email === "" || req.body.password === "" || req.body.username == ""){
-    return res.send.status(400);
-  }
-  
+ 
   //checks if email exists already
   if (getUserByEmail(req.body.email, users)) {
     return res.status(400);

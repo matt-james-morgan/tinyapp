@@ -38,7 +38,10 @@ const users = {
   },
 };
 
+const PORT = 3000;
+
 module.exports = {
   users,
-  urlDatabase
+  urlDatabase,
+  PORT
 }
